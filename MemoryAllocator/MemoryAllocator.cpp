@@ -1,7 +1,8 @@
 
 #include "pch.h"
 #include <iostream>
-#include <queue>
+#include <stack>
+#include <vector>
 #include <string>
 
 template<typename T>
@@ -32,7 +33,7 @@ private:
 	static const size_t m_objDataSize = m_numOfObj * m_objSize;
 	char m_buffer[m_objDataShift + m_objDataSize];
 
-	std::queue<DataInf*> freeMemoryStack;
+	std::stack<DataInf*> freeMemoryStack;
 	DataInf* m_startInfBufer;
 	DataInf* m_endInfBufer;
 };
@@ -45,6 +46,7 @@ MemoryAlloc<T>::MemoryAlloc()
 	for (size_t i = 1; i < m_numOfObj; i++)
 	{
 		tempPtr = new(m_buffer + m_infDataSize * i) DataInf(true, m_objDataShift + m_objSize * i, m_objSize);
+		freeMemoryStack.push(tempPtr);
 	}
 }
 
@@ -64,7 +66,16 @@ T* MemoryAlloc<T>::Add(T obj)
 {
 	T* tempObjPtr = nullptr;
 	DataInf* tempInfPtr = nullptr;
-	for (size_t i = 0; i < m_numOfObj; i++)
+
+	if (freeMemoryStack.size())
+	{
+		tempInfPtr = freeMemoryStack.top();
+		tempObjPtr = reinterpret_cast<T*>(new(m_buffer + tempInfPtr->m_dStart) T(obj));
+		tempInfPtr->m_isMemoryFree = false;
+		tempInfPtr->m_dSize = sizeof(obj);
+		freeMemoryStack.pop();
+	}
+	/*for (size_t i = 0; i < m_numOfObj; i++)
 	{
 		tempInfPtr = m_startInfBufer + i;
 		if (tempInfPtr->m_isMemoryFree)
@@ -74,7 +85,7 @@ T* MemoryAlloc<T>::Add(T obj)
 			tempInfPtr->m_dSize = sizeof(obj);
 			break;
 		}			
-	}
+	}*/
 	return tempObjPtr;
 }
 
@@ -85,6 +96,7 @@ T* MemoryAlloc<T>::Delete(T* obj)
 	DataInf* tempInfPtr = reinterpret_cast<DataInf*> (tempAdr - m_objDataShift);
 	obj->~T();
 	tempInfPtr->m_isMemoryFree = true;
+	freeMemoryStack.push(tempInfPtr);
 	return nullptr;
 }
 using namespace std;
