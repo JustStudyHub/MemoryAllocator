@@ -53,11 +53,12 @@ int main()
 
 	std::cout << "Memory Size: \t" << memorySize << " of string" << std::endl;
 	{
+		std::string temp = "qwerty";
 		// Default Alloc
 		clock_t t0 = clock();
 		for (size_t i = 0; i < memorySize; ++i)
 		{
-			new std::string("qwerty");
+			new std::string(temp);
 		}
 		t0 = clock() - t0;
 		std::cout << "Default memory allocator: \t" << t0 << std::endl;
@@ -67,7 +68,7 @@ int main()
 		MAlloc<std::string> t2(memorySize);
 		for (size_t i = 0; i < memorySize; ++i)
 		{
-			t2.Add("qwerty");
+			t2.Add(temp);
 		}
 		t = clock() - t;
 		std::cout << "Custom memory allocator: \t" << t << std::endl;
