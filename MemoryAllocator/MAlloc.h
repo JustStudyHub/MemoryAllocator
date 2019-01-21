@@ -10,13 +10,7 @@ public:
 private:
 	struct DataInf
 	{
-		DataInf(bool isMemoryFree, size_t dStart, DataInf* prevfreePos)
-		{
-			m_isMemoryFree = isMemoryFree;
-			m_dStart = dStart;
-			m_prevfreePos = prevfreePos;
-		}
-
+		DataInf(bool isMemoryFree, size_t dStart, DataInf* prevfreePos);
 		size_t m_dStart;
 		DataInf* m_prevfreePos;
 		bool m_isMemoryFree;
@@ -53,11 +47,25 @@ template<typename T>
 MAlloc<T>::~MAlloc()
 {
 	DataInf* tempPtr = m_startInfBufer;
-	for (size_t i = 1; i < m_numOfObj; i++)
+	T* tempObjPtr = nullptr;
+	for (size_t i = 0; i < m_numOfObj; i++)
 	{
-		tempPtr += i;
-		tempPtr->~DataInf();
+		tempPtr += 1;
+		if (!tempPtr->m_isMemoryFree)
+		{
+			tempObjPtr = reinterpret_cast<T*>(m_buffer + tempPtr->m_dStart);
+			tempObjPtr->~T();
+		}		
+		tempPtr->~DataInf();		
 	}
+}
+
+template<typename T>
+MAlloc<T>::DataInf::DataInf(bool isMemoryFree, size_t dStart, DataInf* prevfreePos)
+{
+	m_isMemoryFree = isMemoryFree;
+	m_dStart = dStart;
+	m_prevfreePos = prevfreePos;
 }
 
 template<typename T>
