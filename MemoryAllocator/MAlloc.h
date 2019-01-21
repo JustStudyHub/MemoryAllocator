@@ -72,7 +72,7 @@ template<typename T>
 T* MAlloc<T>::Add(T obj)
 {
 	T* tempObjPtr = nullptr;
-	if (m_lastFreePos != nullptr)
+	if (m_lastFreePos != nullptr && sizeof(obj) <= m_objSize)
 	{
 		tempObjPtr = new(m_buffer + m_lastFreePos->m_dStart) T(obj);
 		m_lastFreePos->m_isMemoryFree = false;

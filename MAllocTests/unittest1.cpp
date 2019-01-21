@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
+#include "..\MemoryAllocator\MAlloc.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -9,10 +10,73 @@ namespace MAllocTests
 	{
 	public:
 		
-		TEST_METHOD(TestMethod1)
+		TEST_METHOD(TestAdd)
 		{
-			// TODO: Your test code here
+			std::vector<int*> test1;
+			size_t memorySize = 100;
+			try
+			{
+				MAlloc<int> t1(memorySize);
+				for (int i = 0; i < memorySize; ++i)
+				{
+					test1.push_back(t1.Add(i));
+				}
+				Assert::AreEqual(*test1[0], 0);
+				Assert::AreEqual(*test1[9], 9);
+				Assert::AreEqual(*test1[50], 50);
+				Assert::AreEqual(*test1[99], 99);
+				Assert::IsNull(t1.Add(31));
+			}
+			catch (...)
+			{
+				Assert::Fail();
+			}						
 		}
 
+		TEST_METHOD(TestAddString)
+		{
+			std::vector<std::string*> test1;
+			std::string temp = "qwerty";
+			size_t memorySize = 10000000;
+			try
+			{
+				MAlloc<std::string> t1(memorySize);
+				for (int i = 0; i < memorySize; ++i)
+				{
+					test1.push_back(t1.Add(temp));
+				}
+				Assert::AreEqual(*test1[0], temp);
+				Assert::AreEqual(*test1[9], temp);
+				Assert::AreEqual(*test1[50], temp);
+				Assert::AreEqual(*test1[99], temp);
+				Assert::IsNull(t1.Add(temp));
+			}
+			catch (...)
+			{
+				Assert::Fail();
+			}
+		}
+		TEST_METHOD(TestDelete)
+		{
+			std::vector<int*> test1;
+			size_t memorySize = 100;
+			try
+			{
+				MAlloc<int> t1(memorySize);
+				for (int i = 0; i < memorySize; ++i)
+				{
+					test1.push_back(t1.Add(i));
+				}
+				Assert::AreEqual(*test1[0], 0);
+				Assert::AreEqual(*test1[9], 9);
+				Assert::AreEqual(*test1[50], 50);
+				Assert::AreEqual(*test1[99], 99);
+				Assert::IsNull(t1.Add(31));
+			}
+			catch (...)
+			{
+				Assert::Fail();
+			}
+		}
 	};
 }
