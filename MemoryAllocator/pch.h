@@ -10,5 +10,10 @@
 #define PCH_H
 
 // TODO: add headers that you want to pre-compile here
-
+#include <iostream>
+#include <stack>
+#include <vector>
+#include <string>
+#include "time.h"
+#include "MAlloc.h"
 #endif //PCH_H
