@@ -6,8 +6,10 @@ public:
 	MAlloc(size_t numOfObj);
 	~MAlloc();
 	T* Add(T obj);
+	void* Add();
 	T* Delete(T* obj);
 private:
+#pragma pack(push, 1)
 	struct DataInf
 	{
 		DataInf(bool isMemoryFree, size_t dStart, DataInf* prevfreePos);
@@ -15,6 +17,7 @@ private:
 		DataInf* m_prevfreePos;
 		bool m_isMemoryFree;
 	};
+#pragma pack(pop)
 	size_t m_numOfObj;
 	const size_t m_infDataSize = sizeof(DataInf);
 	const size_t m_objSize = sizeof(T);
@@ -58,6 +61,7 @@ MAlloc<T>::~MAlloc()
 		}		
 		tempPtr->~DataInf();		
 	}
+	delete [] m_buffer;
 }
 
 template<typename T>
@@ -80,6 +84,18 @@ T* MAlloc<T>::Add(T obj)
 	}
 	return tempObjPtr;
 }
+
+template<typename T>
+void* MAlloc<T>::Add()
+{
+	if (m_lastFreePos != nullptr)
+	{
+		m_lastFreePos->m_isMemoryFree = false;
+		m_lastFreePos = m_lastFreePos->m_prevfreePos;
+	}
+	return reinterpret_cast<void*> (m_buffer + m_lastFreePos->m_dStart);
+}
+
 template<typename T>
 T* MAlloc<T>::Delete(T* obj)
 {

@@ -26,8 +26,61 @@ private:
 	int c1;
 	char d;
 };
+
+
+class TestClass2
+{
+public:
+	TestClass2()
+	{
+		a = 5;
+		a1 = 2 * 5;
+		b = 5 + a;
+		b1 = 3 * 5;
+		c = b + 5;
+		c1 = 4 * 5;
+		d = '5';
+		m_conteiner = new MAlloc<TestClass2>(10000);
+	}
+	TestClass2(int t)
+	{
+		a = t;
+		a1 = 2 * t;
+		b = t + a;
+		b1 = 3 * t;
+		c = b + t;
+		c1 = 4 * t;
+		d = 't';
+		m_conteiner = new MAlloc<TestClass2>(10000);
+	}
+	~TestClass2()
+	{
+
+	}
+	void* operator new(size_t size)
+	{
+		return m_conteiner->Add();
+	}
+
+	void operator delete(void* p)
+	{
+		m_conteiner->Delete(reinterpret_cast<TestClass2*>(p));
+	}
+
+private:
+	static MAlloc<TestClass2>* m_conteiner;
+	int a;
+	int b;
+	int c;
+	int a1;
+	int b1;
+	int c1;
+	char d;
+};
+
 int main()
 {
+	//TestClass2 *a  = new TestClass2(6);
 	size_t memorySize = 1000000;
 	std::cout << "Memory Size: \t" << memorySize << " of int" << std::endl;
 	{
@@ -50,7 +103,7 @@ int main()
 		t = clock() - t;
 		std::cout << "Custom memory allocator: \t" << t << std::endl;
 	}
-
+	std::cout << std::endl;
 	std::cout << "Memory Size: \t" << memorySize << " of string" << std::endl;
 	{
 		std::string temp = "qwerty";
@@ -73,7 +126,7 @@ int main()
 		t = clock() - t;
 		std::cout << "Custom memory allocator: \t" << t << std::endl;
 	}
-
+	std::cout << std::endl;
 	std::cout << "Memory Size: \t" << memorySize << " of TestClass" << std::endl;
 
 	// Default Alloc
@@ -90,7 +143,7 @@ int main()
 	MAlloc<TestClass> t2(memorySize);
 	for (size_t i = 0; i < memorySize; ++i)
 	{
-		t2.Add(i);
+		t2.Add(TestClass(i));
 	}
 	t = clock() - t;
 	std::cout << "Custom memory allocator: \t" << t << std::endl;
