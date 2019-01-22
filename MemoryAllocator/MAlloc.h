@@ -88,12 +88,15 @@ T* MAlloc<T>::Add(T obj)
 template<typename T>
 void* MAlloc<T>::Add()
 {
+	DataInf* tempPtr = nullptr;
 	if (m_lastFreePos != nullptr)
 	{
+		DataInf* tempPtr = m_lastFreePos;
 		m_lastFreePos->m_isMemoryFree = false;
 		m_lastFreePos = m_lastFreePos->m_prevfreePos;
+		return reinterpret_cast<void*> (m_buffer + tempPtr->m_dStart);
 	}
-	return reinterpret_cast<void*> (m_buffer + m_lastFreePos->m_dStart);
+	return nullptr;
 }
 
 template<typename T>
@@ -101,7 +104,12 @@ T* MAlloc<T>::Delete(T* obj)
 {
 	size_t tempAdr = reinterpret_cast<size_t>(obj);
 	size_t tempBufAdr = reinterpret_cast<size_t>(m_buffer);
-	DataInf* tempInfPtr = m_lastFreePos;
+	DataInf* tempInfPtr = reinterpret_cast<DataInf*> ((tempAdr - m_objDataShift - tempBufAdr) / m_objSize * m_infDataSize + tempBufAdr);
+	if (tempInfPtr->m_isMemoryFree)
+	{
+		return nullptr;
+	}
+	tempInfPtr = m_lastFreePos;
 	m_lastFreePos = reinterpret_cast<DataInf*> ((tempAdr - m_objDataShift - tempBufAdr)/m_objSize * m_infDataSize + tempBufAdr);
 	obj->~T();
 	m_lastFreePos->m_isMemoryFree = true;
