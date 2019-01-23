@@ -187,9 +187,41 @@ namespace MAllocTests
 				Assert::Fail();
 			}
 		}		
+		TEST_METHOD(TestDelete)
+		{
+			std::vector<TestClass2*> test1;
+			size_t memorySize = 200;
+			try
+			{
+				for (int i = 0; i < memorySize - 100; ++i)
+				{
+					test1.push_back(new TestClass2(i));
+				}
+				delete test1[0];
+				test1[0] = new TestClass2(100);
+				Assert::AreEqual(test1[0]->a, 100);
+				delete test1[20];
+				new TestClass2(200);
+				Assert::AreEqual(test1[20]->a, 200);
+				delete test1[99];
+				new TestClass2(300);
+				Assert::AreEqual(test1[99]->a, 300);
+				delete test1[60];
+				delete test1[70];
+				new TestClass2(400);
+				new TestClass2(500);
+				Assert::AreEqual(test1[60]->a, 500);
+				Assert::AreEqual(test1[70]->a, 400);
+				TestClass2* temp = new TestClass2(600);
+				Assert::AreEqual(temp->a, 600);
+			}
+			catch (...)
+			{
+				Assert::Fail();
+			}
+		}
 		TEST_METHOD(DeleteInFullBuffer)
 		{
-			Assert::AreEqual(100, 100);
 			std::vector<TestClass2*> test1;
 			size_t memorySize = 200;
 			try
@@ -199,8 +231,20 @@ namespace MAllocTests
 					test1.push_back(new TestClass2(i));
 				}
 				delete test1[0];
-				test1[0] = new TestClass2(100);
+				new TestClass2(100);
 				Assert::AreEqual(test1[0]->a, 100);
+				delete test1[20];
+				new TestClass2(200);
+				Assert::AreEqual(test1[20]->a, 200);
+				delete test1[199];
+				new TestClass2(300);
+				Assert::AreEqual(test1[199]->a, 300);
+				delete test1[60];
+				delete test1[70];
+				new TestClass2(400);
+				new TestClass2(500);
+				Assert::AreEqual(test1[60]->a, 500);
+				Assert::AreEqual(test1[70]->a, 400);
 			}
 			catch (...)
 			{

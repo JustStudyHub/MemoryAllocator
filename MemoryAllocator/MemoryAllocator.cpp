@@ -27,69 +27,8 @@ private:
 	char d;
 };
 
-
-class TestClass2
-{
-public:
-	TestClass2()
-	{
-		a = 5;
-		a1 = 2 * 5;
-		b = 5 + a;
-		b1 = 3 * 5;
-		c = b + 5;
-		c1 = 4 * 5;
-		d = '5';
-	}
-	TestClass2(int t)
-	{
-		a = t;
-		a1 = 2 * t;
-		b = t + a;
-		b1 = 3 * t;
-		c = b + t;
-		c1 = 4 * t;
-		d = 't';
-	}
-	void* operator new(size_t size)
-	{
-		return m_conteiner->Add();
-	}
-
-	void operator delete(void* p)
-	{
-		m_conteiner->Delete(reinterpret_cast<TestClass2*>(p));
-	}
-	int a;
-	int b;
-	int c;
-	int a1;
-	int b1;
-	int c1;
-	char d;
-private:
-	static MAlloc<TestClass2>* m_conteiner;
-	
-};
-
-MAlloc<TestClass2>* TestClass2::m_conteiner = new MAlloc<TestClass2>(10);
-
 int main()
 {
-	/*TestClass2 *a  = new TestClass2(6);
-	TestClass2 *b = new TestClass2(8);
-	std::cout << a->a << "\t" << a << std::endl;
-	std::cout << b->a << "\t" << b << std::endl;*/
-
-	std::vector<TestClass2*> test1;
-	size_t memorySize2 = 10;
-	for (int i = 0; i < memorySize2; ++i)
-	{
-		test1.push_back(new TestClass2(i));
-	}
-	delete test1[0];
-	test1[0] = new TestClass2(100);
-	std::cout << test1[0]->a << std::endl;
 	size_t memorySize = 1000000;
 	std::cout << "Memory Size: \t" << memorySize << " of int" << std::endl;
 	{
